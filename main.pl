@@ -24,23 +24,25 @@ for my $request (@requests) {
     my @requestTerms = split(/ /, $request);
     my %RSV = ();
     for my $term (@requestTerms) {
-        my %hash = %{$postingList{$term}};
-        for my $key ( keys %hash ) {
-            my $score = ltn($hash{$key}, scalar(keys %hash));
-            if(exists $RSV{$key}) {
-                $RSV{$key} = $RSV{$key} + $score;
-            } else {
-                $RSV{$key} = $score;
+        if(exists $postingList{$term}) {
+            my %hash = %{$postingList{$term}};
+            for my $key (keys %hash) {
+                my $score = ltn($hash{$key}, scalar(keys %hash));
+                if(exists $RSV{$key}) {
+                    $RSV{$key} = $RSV{$key} + $score;
+                } else {
+                    $RSV{$key} = $score;
+                }
             }
-        } 
+        }
     }
-    print "size of hash:  " . keys( %RSV ) . ".\n";
-    for my $key ( keys %RSV ) {
-        my $value = $RSV{$key};
-        print "$key => $value\n";
+    
+    foreach my $doc ( sort { $RSV{$a} <= $RSV{$b} } keys %RSV ) {
+        printf "%-8s %s\n", $doc, $RSV{$doc};
     }
     # Sort RSV by increasing score and keep the best 1500 results
     # Write the 1500 result lines for the current request
+    # writeRuns(sort { $RSV{$a} <= $RSV{$b} } keys %RSV);
 }
 
 sub ltn {
@@ -48,16 +50,3 @@ sub ltn {
     my $df = shift;
     return (1 + log($tf))*(log($nbDocuments/$df))*(1);
 }
-
-# ltnResults = ltn(postingList)
-# ltcResults = ltc(postingList)
-
-# writeRuns(ltnResults)
-# writeRuns(ltcResults)
-
-# sub function {
-#     my $arg1 = shift;
-#     my $arg2 = shift;
-# }
-
-# function(value1, value2);

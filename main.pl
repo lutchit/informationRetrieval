@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+use parser;
+use writer;
 use strict;
 # use warnings;
 
@@ -7,18 +9,21 @@ my @requests = (
     'olive oil health benefit',
     'notting hill film actors',
     'probabilistic models in information retrieval',
-    'web link network analysis', 
-    'web ranking scoring algorithm', 
+    'web link network analysis',
+    'web ranking scoring algorithm',
     'supervised machine learning algorithm',
     'operating system mutual exclusion');
 
 
+my @writingList = ();
+my $compteur = 0;
+
 my $nbDocuments = 9800;
-# my %postingList = parsing();
-my %postingList = (
-    'olive' => {'doc1' => '5', 'doc2' => '1'},
-    'oil' => {'doc1' => '4', 'doc3' => '3'}
-);
+my %postingList = parser::parsing();
+# my %postingList = (
+#     'olive' => {'doc1' => '5', 'doc2' => '1'},
+#     'oil' => {'doc1' => '4', 'doc3' => '3'}
+# );
 
 for my $request (@requests) {
     my @requestTerms = split(/ /, $request);
@@ -36,13 +41,21 @@ for my $request (@requests) {
             }
         }
     }
-    
-    foreach my $doc ( sort { $RSV{$a} <= $RSV{$b} } keys %RSV ) {
+    $compteur = 0;
+    foreach my $doc ( reverse (sort { $RSV{$a} <=> $RSV{$b} } keys %RSV) ) {
         printf "%-8s %s\n", $doc, $RSV{$doc};
+        push(@writingList, $doc);
+        $compteur++;
+        last if ($compteur == 1500);
     }
+#
+#     for my $k (keys %RSV){
+#   print "$k : $RSV{$k}\n";
+# }
+
     # Sort RSV by increasing score and keep the best 1500 results
     # Write the 1500 result lines for the current request
-    # writeRuns(sort { $RSV{$a} <= $RSV{$b} } keys %RSV);
+    writer::writeRuns("02", "ltn", @writingList);
 }
 
 sub ltn {

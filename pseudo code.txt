@@ -1,0 +1,77 @@
+//Entrée : postList = posting list , nbDoc = nb de documents
+
+//// LTN
+
+ltn(term, docNo){
+	hash = postList[term]
+	tf = hash[docNo]
+	df = length(hash) //nb de documents dans lesquels apparait le terme
+	ltn = (df==0)?0:(log(1+tf)*log(nbDoc/df)) //Attention à la division par 0 si le terme de la query n'existe pas
+	return ltn
+}
+
+//// LTC
+
+docNorms = hash[] //On stocke les normes des documents car appelées souvent et lourdes en calcul
+
+fillNorms(){
+	for docNo in 1:nbDoc{ //initialisation à 0
+		docNorms.add(docNo, 0)		
+	}
+	for term in postList{ //On parcourt tous les termes plutot que tous les documents pour la complexité
+		hash = postList[term]
+		df = length[hash]
+		for docNo in hash{
+			tf = hash[docNo]
+			ltn = log(1+tf)*log(nbDoc/df)
+			docNorms[docNo] += ltn*ltn
+		}
+	}
+	for docNo in 1:nbDoc{
+		docNorms[docNo] = sqrt(docNorms[docNo])
+	}
+}
+
+fillNorms()
+
+ltc(term, docNo){
+	ltn = ltn(term, docNo)
+	dn = docNorms[docNo] //Normalement forcément supérieur à 0, sauf si mauvais docNo spécifié
+	return (ltn/dn)
+}
+
+/// BM 25
+
+docLengths = hash[] //le calcul serait mieux à faire au moment du parser
+
+fillLenghts(){ //peut être groupé avec fillNorms, envoyant le résultat dans 1 seule structure
+	for docNo in 1:nbDoc{ //initialisation à 0
+	docLengths.add(docNo, 0)		
+	}
+	for term in postList{ //On parcourt tous les termes plutot que tous les documents pour la complexité
+		hash = postList[term]
+		for docNo in hash{
+			tf = hash[docNo]
+			docLengths[docNo] += tf
+		}
+	}
+}
+
+fillLenghts()
+
+avgdl = 0 // Ici il n'y aura que 1 moyenne de longueur de documents car on ne distingue pas encore les balises
+for docNo in 1:nbDoc{
+	avgdl += docLengths[docNo]
+}
+avgdl /= nbDoc
+
+bm25(term, docNo, k, b){ //On peut prendre k=1 et b=0.5
+	hash = postList[term]
+	tf = hash[docNo]
+	df = length(hash) //nb de documents dans lesquels apparait le terme
+	newtf = (tf*(k+1))/(k*((1+b)+b*(docLengths[docNo]/avgdl))+tf)
+	newidf = log((nbDoc-df+0.5)/(df+0.5))
+	bm25 = newtf*newidf
+	return bm25
+}
+

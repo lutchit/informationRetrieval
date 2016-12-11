@@ -65,7 +65,7 @@ for docNo in 1:nbDoc{
 }
 avgdl /= nbDoc
 
-bm25(term, docNo, k, b){ //On peut prendre k=1 et b=0.5
+bm25(term, docNo, k, b){ //On peut prendre k=1 et b=0.5 ; 0<b<1 ; 0<k<+infini
 	hash = postList[term]
 	tf = hash[docNo]
 	df = length(hash) //nb de documents dans lesquels apparait le terme

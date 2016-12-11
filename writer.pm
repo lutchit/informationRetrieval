@@ -29,7 +29,7 @@ foreach (@list){
 
   my $nb_req = req($req);
 
-  print FICHIER "$nb_req Q0 " . $_ . " " . $score . " PierreJulienDimitriLudovic /article[1]\n";
+  print FICHIER "$nb_req Q0 " . $_ . " " . $compteur . " " . $score . " PierreJulienDimitriLudovic /article[1]\n";
 }
 
 close (FICHIER);

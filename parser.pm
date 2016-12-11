@@ -9,6 +9,10 @@ use encoding 'utf8';
 
 BEGIN {}
  sub parsing {
+
+my ($hashwords, $hashdocs) = @_;
+# my %hashdocs = shift;
+
 my ($repcoll) = "coll"; # r�pertoire ne contenant que des fichiers XXXXX.xml
 my ($parser) = XML::LibXML->new('recover'=>1);
 $parser->recover_silently(1); # pour �viter que le parser plante si erreur XML
@@ -18,7 +22,6 @@ my ($nb_articles) = 0;
 my ($nb_elements) = 0;
 my ($taille_texte) = 0;
 
-my %hashwords = ();
 
 # limites
 my ($nb_todo) = 100;
@@ -79,16 +82,17 @@ while ($entry = readdir(REPIN)) {
 
 			#print "texte : $texte\n";
 			my @mots = split(" ", $body);
+      $hashdocs->{$nodoc} = scalar(@mots);
 
 			foreach my $mot (@mots) {
-				if (!exists($hashwords{$mot})) {
+				if (!exists($hashwords->{$mot})) {
 					#print "mot1 : $mot\n";
 					my %hashtf = ();
 					$hashtf{$nodoc} = 1;
-					$hashwords{$mot} = \%hashtf;
+					$hashwords->{$mot} = \%hashtf;
 				} else {
 					#print "mot2 : $mot\n";
-					$hashwords{$mot}{$nodoc}++;
+					$hashwords->{$mot}{$nodoc}++;
 				}
 				#print "$mot | ";
 			}
@@ -127,11 +131,11 @@ while ($entry = readdir(REPIN)) {
 # 	print "Clef=$k Valeur=$hash2{$k}\n";
 # }
 
-print "nb words : ".scalar(keys (%hashwords))."\n";
+# print "nb words : ".scalar(keys (%hashwords))."\n";
 
 print "Nombre d'articles : $nb_articles
 Nombre d'elements : $nb_elements
 Taille totale texte : $taille_texte\n";
-  return %hashwords;
+  # return %hashwords;
 }
 1;

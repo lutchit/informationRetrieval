@@ -20,7 +20,16 @@ my @writingListBm25 = ();
 my $compteur = 0;
 
 my $nbDocuments = 9804;
-my %postingList = parser::parsing();
+my %postingList = ();
+my %docsList = ();
+
+
+parser::parsing(\%postingList, \%docsList);
+
+my $avgdl = avgdl(%docsList);
+
+print $avgdl;
+
 # my %postingList = (
 #     'olive' => {'doc1' => '5', 'doc2' => '1'},
 #     'oil' => {'doc1' => '4', 'doc3' => '3'}
@@ -35,7 +44,7 @@ for my $request (@requests) {
             my %hash = %{$postingList{$term}};
             for my $key (keys %hash) {
                 my $scoreLtn = ltn($hash{$key}, scalar(keys %hash));
-                my $scoreBm25 = bm25($hash{$key}, scalar(keys %hash), 1, 0.5);
+                my $scoreBm25 = bm25($hash{$key}, scalar(keys %hash), 1, 0.8, $key);
                 if(exists $RSVltn{$key}) {
                     $RSVltn{$key} = $RSVltn{$key} + $scoreLtn;
                 } else {
@@ -76,7 +85,8 @@ sub bm25 {
     my $df = shift;
     my $k = shift;
     my $b = shift;
-    my $newTf = ($tf*($k+1))/($k*((1 + $b) + $b * (docLengths[docNo] / avgdl)) + $tf);
+    my $docNo = shift;
+    my $newTf = ($tf*($k+1))/($k*((1 + $b) + $b * (%docsList{$docNo} / $avgdl)) + $tf);
     my $newIdf = log(($nbDocuments - $df + 0.5)/($df + 0.5));
     return $newTf*$newIdf;
 }
@@ -95,4 +105,13 @@ sub ltn {
     my $tf = shift;
     my $df = shift;
     return (1 + log($tf))*(log($nbDocuments/$df))*(1);
+}
+
+sub avgdl {
+  my $length = 0;
+  for my $key (keys %docsList){
+    $length += %docsList{$key};
+  }
+  print "LENGTH" . $length;
+  return $length/(scalar(keys %docsList));
 }

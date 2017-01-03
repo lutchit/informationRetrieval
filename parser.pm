@@ -53,52 +53,91 @@ while ($entry = readdir(REPIN)) {
 			my $nodoc = $root->getElementsByTagName('id')->[0]->getFirstChild->getData;
 			# print "nodoc : $nodoc\n";
 
-			my $body = $root->findnodes('//bdy');
+			my $nodes = $root->findnodes('//*');
+			foreach my $node ($nodes->get_nodelist) {
+					#printf "%s --> %s\n", $node->nodePath, $node->getFirstChild->getData;
+					my $nodePath = $node->nodePath;
+					my $nodeContent = $node->getFirstChild->getData;
 
-			$body =~ s/\n/ /sg;
-			$body =~ s/ +/ /sg;
-			# $body =~ s/\W+//sg;
-			#$body =~ s/[^\pL\s]//g;
-			$body =~ tr/a-zA-Z0-9 //dc;
-			# $body =~ s/\;//sg;
-			# $body =~ s/\,//sg;
-			# $body =~ s/\'//sg;
-			# $body =~ s/\"//sg;
-			# $body =~ s/\(//sg;
-			# $body =~ s/\)//sg;
-			# $body =~ s/\-//sg;
-			# $body =~ s/\_//sg;
-			# $body =~ s/\^//sg;
-			# $body =~ s/\://sg;
-			# $body =~ s/\///sg;
+					$nodeContent =~ s/\n/ /sg;
+					$nodeContent =~ s/ +/ /sg;
+					$nodeContent =~ tr/a-zA-Z0-9 //dc;
 
-			#print "body : $body\n\n";
+					# print "CONTENT =======> $nodeContent\n";
 
-			# on r�cup�re le texte de tout l'article
+					my @mots = split(" ", $nodeContent);
+
+					foreach my $mot (@mots) {
+						if (!exists($hashwords{$mot})) {
+							#print "mot1 : $mot\n";
+							my %hashtf = ();
+							# print "Path : $nodePath\n";
+							$hashtf{$nodePath} = 1;
+							$hashwords{$mot} = \%hashtf;
+						} else {
+							#print "mot2 : $mot\n";					
+							if (exists($hashwords{$mot}{$nodePath})) {
+								$hashwords{$mot}{$nodePath}++;
+							}
+							else {
+								my %hashtf = ();
+								$hashtf{$nodePath} = 1;
+								$hashwords{$mot} = \%hashtf;
+							}
+						}
+						# print "$mot | ";
+						# print "TEST :: $hashwords{$mot}{$nodePath}\n";
+					}
+			}
+			print "\n\n\n";
+
+			# my $body = $root->findnodes('//bdy');
+
+			# $body =~ s/\n/ /sg;
+			# $body =~ s/ +/ /sg;
+			# # $body =~ s/\W+//sg;
+			# #$body =~ s/[^\pL\s]//g;
+			# $body =~ tr/a-zA-Z0-9 //dc;
+			# # $body =~ s/\;//sg;
+			# # $body =~ s/\,//sg;
+			# # $body =~ s/\'//sg;
+			# # $body =~ s/\"//sg;
+			# # $body =~ s/\(//sg;
+			# # $body =~ s/\)//sg;
+			# # $body =~ s/\-//sg;
+			# # $body =~ s/\_//sg;
+			# # $body =~ s/\^//sg;
+			# # $body =~ s/\://sg;
+			# # $body =~ s/\///sg;
+
+			# #print "body : $body\n\n";
+
+			# # on r�cup�re le texte de tout l'article
 			my ($texte) = $root->textContent;
 
-			#chomp($texte);
-			#$texte =~ s/\n\n\/\n/g;
+			# #chomp($texte);
+			# #$texte =~ s/\n\n\/\n/g;
 
-			#print "texte : $texte\n";
-			my @mots = split(" ", $body);
-      $hashdocs->{$nodoc} = scalar(@mots);
+			# #print "texte : $texte\n";
+			# my @mots = split(" ", $body);
+   #    $hashdocs->{$nodoc} = scalar(@mots);
 
-			foreach my $mot (@mots) {
-				if (!exists($hashwords->{$mot})) {
-					#print "mot1 : $mot\n";
-					my %hashtf = ();
-					$hashtf{$nodoc} = 1;
-					$hashwords->{$mot} = \%hashtf;
-				} else {
-					#print "mot2 : $mot\n";
-					$hashwords->{$mot}{$nodoc}++;
-				}
-				#print "$mot | ";
-			}
+			# foreach my $mot (@mots) {
+			# 	if (!exists($hashwords->{$mot})) {
+			# 		#print "mot1 : $mot\n";
+			# 		my %hashtf = ();
+			# 		$hashtf{$nodoc} = 1;
+			# 		$hashwords->{$mot} = \%hashtf;
+			# 	} else {
+			# 		#print "mot2 : $mot\n";
+			# 		$hashwords->{$mot}{$nodoc}++;
+			# 	}
+			# 	#print "$mot | ";
+			# }
 
-			# print "Nb occurence of 'the' in $nodoc : $hashwords{the}{$nodoc}\n";
-
+			my $pathTest = "\/article\/entity\/bdy\/sec[3]\/p[2]";
+			print "Nb occurence of 'is' in $pathTest : $hashwords{is}{$pathTest}\n";
+			
 			$taille_texte += length($texte);
 			my ($chemin) = '/article[1]';
 			my (%num_balises);

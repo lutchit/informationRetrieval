@@ -101,6 +101,18 @@ sub bm25 {
 # 	return bm25
 # }
 
+sub bm25f {
+    my $tf = shift;
+    my $df = shift;
+    my $k = shift;
+    my $b = shift;
+    my $totalTf = 3*$tf[0] + 2*$tf[1] + $tf[2];
+    my $docNo = shift;
+    my $newTf = ($totalTf*($k+1))/($k*((1 + $b) + $b * (%docsList{$docNo} / $avgdl)) + $totalTf);
+    my $newIdf = log(($nbDocuments - $df + 0.5)/($df + 0.5));
+    return $newTf*$newIdf;
+}
+
 sub ltn {
     my $tf = shift;
     my $df = shift;

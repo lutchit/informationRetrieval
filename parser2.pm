@@ -69,7 +69,7 @@ while ($entry = readdir(REPIN)) {
 			}
 
 			$nb_elements ++;
-			 print "titre : $titre\n";
+			#  print "titre : $titre\n";
 
       my ($category) = $root->findvalue('//category');
       $category =~ s/\s+/ /g;
@@ -92,7 +92,7 @@ while ($entry = readdir(REPIN)) {
 			}
 
 
-      print "category : $category\n";
+      # print "category : $category\n";
 
 			my $body = $root->findnodes('//bdy');
 
@@ -133,9 +133,9 @@ while ($entry = readdir(REPIN)) {
 					$hashtf{$nodoc} = \@tabtf;
 					$hashwords->{$mot} = \%hashtf;
 				} else {
-					print "mot2 : $mot ";
+					# print "mot2 : $mot ";
 					$hashwords->{$mot}{$nodoc}[2]++;
-          print 	"$hashwords->{$mot}{$nodoc}[0]\n";
+          # print 	"$hashwords->{$mot}{$nodoc}[0]\n";
 				}
 				#print "$mot | ";
 			}
@@ -160,7 +160,7 @@ while ($entry = readdir(REPIN)) {
 	} else {
 	    print "Erreur parser (fichier $repcoll/$entry\n";
 	}
-	 last if ($nb_articles == $nb_todo);
+	#  last if ($nb_articles == $nb_todo);
     }
 }
 

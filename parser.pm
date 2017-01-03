@@ -60,19 +60,6 @@ while ($entry = readdir(REPIN)) {
 			# $body =~ s/\W+//sg;
 			#$body =~ s/[^\pL\s]//g;
 			$body =~ tr/a-zA-Z0-9 //dc;
-			# $body =~ s/\;//sg;
-			# $body =~ s/\,//sg;
-			# $body =~ s/\'//sg;
-			# $body =~ s/\"//sg;
-			# $body =~ s/\(//sg;
-			# $body =~ s/\)//sg;
-			# $body =~ s/\-//sg;
-			# $body =~ s/\_//sg;
-			# $body =~ s/\^//sg;
-			# $body =~ s/\://sg;
-			# $body =~ s/\///sg;
-
-			#print "body : $body\n\n";
 
 			# on r�cup�re le texte de tout l'article
 			my ($texte) = $root->textContent;

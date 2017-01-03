@@ -53,11 +53,13 @@ while ($entry = readdir(REPIN)) {
 			my $nodoc = $root->getElementsByTagName('id')->[0]->getFirstChild->getData;
 			# print "nodoc : $nodoc\n";
 
-			my $nodes = $root->findnodes('//*');
+			my $nodes = $root->findnodes('//sec');
 			foreach my $node ($nodes->get_nodelist) {
-					#printf "%s --> %s\n", $node->nodePath, $node->getFirstChild->getData;
-					my $nodePath = $node->nodePath;
-					my $nodeContent = $node->getFirstChild->getData;
+					#printf "%s --> %s\n", $node->nodePath, $node->textContent;
+					my $docPath = $nodoc.$node->nodePath;
+					my $nodeContent = $node->textContent;
+
+					# print "PATH =======> $docPath\n";
 
 					$nodeContent =~ s/\n/ /sg;
 					$nodeContent =~ s/ +/ /sg;
@@ -69,23 +71,20 @@ while ($entry = readdir(REPIN)) {
 
 					foreach my $mot (@mots) {
 						if (!exists($hashwords{$mot})) {
-							#print "mot1 : $mot\n";
 							my %hashtf = ();
-							# print "Path : $nodePath\n";
-							$hashtf{$nodePath} = 1;
+							$hashtf{$docPath} = 1;
 							$hashwords{$mot} = \%hashtf;
 						} else {
-							#print "mot2 : $mot\n";					
-							if (exists($hashwords{$mot}{$nodePath})) {
-								$hashwords{$mot}{$nodePath}++;
+							if (exists($hashwords{$mot}{$docPath})) {
+								$hashwords{$mot}{$docPath}++;
 							}
 							else {
-								my %hashtf = ();
-								$hashtf{$nodePath} = 1;
-								$hashwords{$mot} = \%hashtf;
+								$hashwords{$mot}{$docPath} = 1;
 							}
 						}
 						# print "$mot | ";
+						# my $pathTest = "\/article\/entity\/bdy\/sec[1]";
+						# print "Nb occurence of 'an' in $pathTest : $hashwords{an}{$pathTest}\n";
 						# print "TEST :: $hashwords{$mot}{$nodePath}\n";
 					}
 			}

@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 
 use parser;
+use parser2;
 use writer;
 use strict;
 # use warnings;
@@ -30,6 +31,7 @@ my $avgdl = avgdl(%docsList);
 
 print $avgdl;
 
+#
 # my %postingList = (
 #     'olive' => {'doc1' => '5', 'doc2' => '1'},
 #     'oil' => {'doc1' => '4', 'doc3' => '3'}
@@ -44,7 +46,7 @@ for my $request (@requests) {
             my %hash = %{$postingList{$term}};
             for my $key (keys %hash) {
                 my $scoreLtn = ltn($hash{$key}, scalar(keys %hash));
-                my $scoreBm25 = bm25($hash{$key}, scalar(keys %hash), 1, 0.8, $key);
+                my $scoreBm25 = bm25($hash{$key}, scalar(keys %hash), 1.2, 0.5, $key);
                 if(exists $RSVltn{$key}) {
                     $RSVltn{$key} = $RSVltn{$key} + $scoreLtn;
                 } else {
